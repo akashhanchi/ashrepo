@@ -1,0 +1,38 @@
+[
+  {
+    "question": "Get the company name",
+    "sql": "SELECT ict.INS_CMPY_TYP_NM FROM INSURANCE_COMPANY_TYPE ict, POLICY p WHERE p.INS_CMPY_TYP_ID = ict.INS_CMPY_TYP_ID"
+  },
+  {
+    "question": "Get the cash receipt details",
+    "sql": "SELECT crh.CASH_RECT_HDR_CASH_RECT_DT as 'Cash Receipt Date', crh.CASH_RECT_HDR_RECV_DT as 'Cash Receipt Received Date', crh.AUDIT_USER_CREA_DTM as 'Cash Receipt Entered Date', crh.CASH_RECT_MEDA_TYP_CD as 'Media Type Code', crh.CASH_RECT_HDR_CASH_RECT_NO as 'Cash Receipt Number', crh.CASH_RECT_HDR_CASH_RECT_AMT as 'Cash Receipt Posted Amount' FROM CASH_RECEIPT_HEADER crh"
+  },
+  {
+    "question": "Get the policy type name",
+    "sql": "SELECT cest.CTL_ELEM_SUB_TYP_NM FROM POLICY_PERIOD pp, POLICY_CONTROL_ELEMENT pce, CONTROL_ELEMENT_SUB_TYPE cest WHERE pce.PLCY_PRD_ID = pp.PLCY_PRD_ID AND pce.CTL_ELEM_TYP_CD = 'plcy_typ' AND pce.VOID_IND = 'n' AND pce.CTL_ELEM_SUB_TYP_ID = cest.CTL_ELEM_SUB_TYP_ID AND cest.CTL_ELEM_SUB_TYP_VOID_IND = 'n'"
+  },
+  {
+    "question": "Get the reporting frequency",
+    "sql": "SELECT cest.CTL_ELEM_SUB_TYP_NM FROM POLICY_PERIOD pp, POLICY_CONTROL_ELEMENT pce, CONTROL_ELEMENT_SUB_TYPE cest WHERE pce.PLCY_PRD_ID = pp.PLCY_PRD_ID AND pce.CTL_ELEM_TYP_CD = 'rpt_freq' AND pce.VOID_IND = 'n' AND pce.CTL_ELEM_SUB_TYP_ID = cest.CTL_ELEM_SUB_TYP_ID AND cest.CTL_ELEM_SUB_TYP_VOID_IND = 'n'"
+  },
+  {
+    "question": "Get the jurisdiction name or primary risk location name",
+    "sql": "SELECT jt.JUR_TYP_NM FROM POLICY_PERIOD pp, POLICY_PERIOD_RISK ppr, RISK_LOCATION rl, JURISDICTION_TYPE jt WHERE pp.PLCY_PRD_ID = ppr.PLCY_PRD_ID AND ppr.PLCY_PRD_RISK_PRI_IND = 'y' AND ppr.RISK_ID = rl.RISK_ID AND rl.JUR_TYP_CD = jt.JUR_TYP_CD"
+  },
+  {
+    "question": "Get the policy owner or underwriter",
+    "sql": "SELECT CONCAT(u.USER_NM_FST, ' ', u.USER_NM_LST) FROM POLICY_PERIOD pp, ASSIGNMENT a, USERS u WHERE pp.PLCY_PRD_ID = a.ASGN_CNTX_ID AND a.FNCT_ROLE_ID = 57 AND a.USER_ID = u.USER_ID"
+  },
+  {
+    "question": "Get the policy billing group",
+    "sql": "SELECT ppg.PLCY_PRD_BILL_GRP_NO FROM POLICY_PERIOD pp, POLICY_PERIOD_GROUP ppg WHERE ppg.PLCY_PRD_ID = pp.PLCY_PRD_ID AND ppg.CUST_GRP_ID IN (SELECT CUST_GRP_ID FROM Policy_period_risk ppr, RISK_LOCATION rl, CUSTOMER_GROUP cg WHERE ppr.PLCY_PRD_ID = pp.PLCY_PRD_ID AND ppr.RISK_ID = rl.RISK_ID and rl.CUST_ADDR_ID = cg.CUST_ADDR_ID AND cg.CUST_GRP_TYP_CD='bill')"
+  },
+  {
+    "question": "Get the policy holder name",
+    "sql": "SELECT cn.CUST_NM_NM  from POLICY p, CUSTOMER_NAME cn where p.CUST_ID_ACCT_HLDR = cn.CUST_ID and cn.CUST_NM_TYP_CD ='busn_legal_nm'"
+  },
+  {
+    "question": "Get the Cash Receipt Received Amount, Deposit Date, Transaction ID",
+    "sql": "SELECT pft.PFT_AMT, pft.PFT_DT, pft.PFT_ID FROM POLICY_FINANCIAL_TRANSACTION pft"
+  }
+]
