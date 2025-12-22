@@ -28,6 +28,7 @@ to run the model locally>ollama run <model_name> ex: ollama run deepseek
 
 **To Run Chroma DB**
 D:\SR_Project\AI_Proj>"C:\Users\akash.hanchinal\AppData\Local\Programs\Python\Python312\Scripts\chroma.exe" run --host localhost --port 8000 --path ./my_chroma_data
+chroma DB status (Heart-beat) : http://localhost:8000/api/v1/heartbeat
 
 **Manual Verification Steps**
 Configure DDL Directory: Ensure application.properties points to your DDL folder:
