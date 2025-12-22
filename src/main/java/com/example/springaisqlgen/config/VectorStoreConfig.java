@@ -20,6 +20,9 @@ public class VectorStoreConfig {
         ChromaApi chromaApi = new ChromaApi("http://localhost:8000", new RestTemplate());
 
         // Use the specific collection name
+        // return new ChromaVectorStore(embeddingModel, chromaApi, "SqlGenCollection",
+        // true);
         return new ChromaVectorStore(embeddingModel, chromaApi, "SqlGenCollection", true);
+
     }
 }
