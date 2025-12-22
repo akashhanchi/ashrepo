@@ -2,10 +2,16 @@ package com.example.springaisqlgen.service;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.ChromaVectorStore;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+
+import org.springframework.ai.chroma.ChromaApi;
+import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -28,7 +34,11 @@ public class DdlService {
     @Value("${app.ddl.ingest:false}")
     private boolean ingestDdl;
 
+    @Autowired
     private final VectorStore vectorStore;
+
+    @Autowired
+    private EmbeddingModel embeddingModel;
 
     public DdlService(VectorStore vectorStore) {
         this.vectorStore = vectorStore;
@@ -73,29 +83,59 @@ public class DdlService {
             System.out.println("Processing " + type + " file: " + filePath);
             List<Document> documents = new ArrayList<>();
 
+            // 1. Read full DDL File
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
                 String content = reader.lines().collect(Collectors.joining("\n"));
 
                 // Split by semi-colon
-                String[] statements = content.split(";");
-
-                for (String stmt : statements) {
-                    if (stmt.trim().length() > 10) {
-                        Document doc = new Document(stmt.trim() + ";",
-                                Map.of("type", type, "source", filePath.getFileName().toString()));
-                        documents.add(doc);
-                    }
-                }
+                /*
+                 * String[] statements = content.split(";");
+                 * 
+                 * for (String stmt : statements) {
+                 * if (stmt.trim().length() > 10) {
+                 * Document doc = new Document(stmt.trim() + ";",
+                 * Map.of("type", type, "source", filePath.getFileName().toString()));
+                 * documents.add(doc);
+                 * }
+                 * }
+                 */
+                // 2. split into logical DDL blocks
+                documents = DdlBlockSplitter.splitDdl(content,
+                        Map.of("type", type, "source", filePath.getFileName().toString()));
             }
 
             if (!documents.isEmpty()) {
-                vectorStore.add(documents);
-                System.out.println("Ingested " + documents.size() + " statements from " + filePath);
+                long commentCount = documents.stream()
+                        .filter(d -> d.getContent().toUpperCase().startsWith("COMMENT"))
+                        .count();
+                // 3. Batched ingestion
+                ingestInBatches(documents);
             }
 
         } catch (Exception e) {
             System.err.println("Error processing file " + filePath + ": " + e.getMessage());
+        }
+    }
+
+    private void ingestInBatches(List<Document> documents) {
+        int batchSize = 200; // Configurable batch size
+        int total = documents.size();
+        System.out.println("Ingesting " + total + " documents in batches of " + batchSize);
+
+        for (int i = 0; i < total; i += batchSize) {
+            int end = Math.min(i + batchSize, total);
+            List<Document> batch = documents.subList(i, end);
+            try {
+                vectorStore.add(batch);
+                System.out
+                        .println("Ingested batch " + ((i / batchSize) + 1) + "/" + ((total + batchSize - 1) / batchSize)
+                                + " (" + batch.size() + " documents)");
+            } catch (Exception e) {
+                System.err.println("Error ingesting batch " + ((i / batchSize) + 1) + ": " + e.getMessage());
+                // Continue with next batch? or throw? For now log and continue to try to get as
+                // much as possible
+            }
         }
     }
 
