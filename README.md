@@ -15,16 +15,18 @@ src/main/java/.../service/ExcelService.java: Parses Excel files for "Report attr
 src/main/java/.../service/SqlGenerationService.java: Generates SQL using Spring AI.
 src/main/java/.../controller/GenerationController.java: REST API endpoint.
 
-**Verification Results**
-Automated Tests
-ExcelServiceTest: Verified that the Excel parser correctly extracts data from the specified columns.
-mvn clean package: Build passed (pending final confirmation).
+**OLLAMA**
+CMD>ollama --version
+to list the models in local> ollama list, 
+to run the model locally>ollama run <model_name> ex: ollama run deepseek
+
+**To Run Chroma DB**
+D:\SR_Project\AI_Proj>"C:\Users\akash.hanchinal\AppData\Local\Programs\Python\Python312\Scripts\chroma.exe" run --host localhost --port 8000 --path ./my_chroma_data
 
 **Manual Verification Steps**
 Configure DDL Directory: Ensure application.properties points to your DDL folder:
 
 **app.ddl-directory**=C:/Users/akash.hanchinal/.gemini/antigravity/scratch/ddl_files
-(I have already created this folder and a sample sample_schema.sql in it).
 
 **Start the Application:**
 spring-ai-sql-gen>mvn spring-boot:run
