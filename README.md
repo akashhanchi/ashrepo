@@ -11,8 +11,11 @@ chromaDB 0.5.5
 
 **Project Structure**
 src/main/java/.../service/DdlService.java: Reads DDL scripts.
+
 src/main/java/.../service/ExcelService.java: Parses Excel files for "Report attribute", "Defination", "Data Source".
+
 src/main/java/.../service/SqlGenerationService.java: Generates SQL using Spring AI.
+
 src/main/java/.../controller/GenerationController.java: REST API endpoint.
 
 **OLLAMA**
