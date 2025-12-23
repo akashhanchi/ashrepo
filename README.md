@@ -15,10 +15,11 @@ src/main/java/.../service/DdlService.java: Reads DDL scripts.
 src/main/java/.../service/ExcelService.java: Parses Excel files for "Report attribute", "Defination", "Data Source".
 
 src/main/java/.../service/SqlGenerationService.java: Generates SQL using Spring AI.
-Load this JSON file on startup.
+Load the golden_examples.json file on startup.
 Inject these examples into the LLM system prompt under a new section: ### Examples (Few-Shot Learning).
 
 src/main/java/.../controller/GenerationController.java: REST API endpoint.
+
 src/main/resources/golden_examples.json: Enhance LLM Knowledge with Few-Shot Learning.
 
 **OLLAMA**
